@@ -2,32 +2,63 @@
   <div id="app">
     <h1>Coördinaten Opzoeken</h1>
 
-    <form novalidate="novalidate" @submit.prevent="lookup">
-      <input type="text" v-model="lat" placeholder="lat">
-      <input type="text" v-model="lon" placeholder="lon">
-      <button type="submit">Berekenen</button>
+    <form enctype="multipart/form-data" novalidate @submit.prevent="lookup">
+      <input type="file" @change="importCSV">
     </form>
 
-    <section>
-      <h2>Gevonden locaties</h2>
-      <p v-for="(res, index) in result" :key="index">{{ res.formattedAddress }}</p>
-    </section>
+    <template v-if="csv">
+      <section v-if="renderResult">
+        <h2>Gevonden locaties</h2>
+        <location-result v-for="(entry, idx) of filtered" :key="idx" :entry="entry" />
+      </section>
+
+      <section v-else>
+
+        <h2>Bestand verwerkt</h2>
+        <p>We hebben {{ filtered.length }} coördinaten gevonden, verdergaan?</p>
+        <button type="button" @click.stop="renderResult = true">Opzoeken</button>
+      </section>
+    </template>
+
+    <template v-else>
+      <h2>Geen bestand opgeladen</h2>
+    </template>
   </div>
 </template>
 
 <script>
-import geocoder from '@/api/geocoder';
+import filter from 'lodash/filter';
+import Papa from 'papaparse';
+
+import LocationResult from '@/components/LocationResult.vue';
 
 export default {
+  components: {
+    LocationResult
+  },
+
   data: () => ({
-    lat: 0,
-    lon: 0,
-    result: {}
+    csv: null,
+    result: {},
+    renderResult: false
   }),
 
+  computed: {
+    filtered() {
+      return filter(this.result.data, ({ ignition }) => ignition === 'false');
+    }
+  },
+
   methods: {
-    async lookup() {
-      this.result = await geocoder.decode(this.lat, this.lon);
+    async importCSV(event) {
+      this.renderResult = false;
+      [this.csv] = event.target.files;
+      Papa.parse(this.csv, {
+        header: true,
+        complete: (parsed) => {
+          this.result = parsed;
+        }
+      });
     }
   }
 };
@@ -42,5 +73,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+
+  form {
+    padding-bottom: 50px;
+    margin-bottom: 50px;
+    border-bottom: 1px solid lighten(#2c3e50, 60%);
+  }
 }
 </style>

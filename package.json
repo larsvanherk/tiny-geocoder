@@ -10,7 +10,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "lodash": "^4.17.11",
     "node-geocoder": "^3.22.0",
+    "papaparse": "^4.6.3",
     "vue": "^2.6.6"
   },
   "devDependencies": {
