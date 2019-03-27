@@ -9,7 +9,12 @@
     <template v-if="csv">
       <section v-if="renderResult">
         <h2>Gevonden locaties</h2>
-        <location-result v-for="(entry, idx) of filtered" :key="idx" :entry="entry" />
+        <button id="hide-coordinates" @click="hideCoordinates = !hideCoordinates">
+          Coördinaten verbergen
+        </button>
+        <location-result
+          v-for="(entry, idx) of filtered" :key="idx"
+          :entry="entry" :hide-coordinates="hideCoordinates" />
       </section>
 
       <section v-else>
@@ -40,6 +45,7 @@ export default {
   data: () => ({
     csv: null,
     result: {},
+    hideCoordinates: false,
     renderResult: false
   }),
 
@@ -78,6 +84,10 @@ export default {
     padding-bottom: 50px;
     margin-bottom: 50px;
     border-bottom: 1px solid lighten(#2c3e50, 60%);
+  }
+
+  #hide-coordinates {
+    margin-bottom: 40px;
   }
 }
 </style>

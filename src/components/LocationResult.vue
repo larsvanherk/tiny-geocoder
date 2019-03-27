@@ -1,6 +1,6 @@
 <template>
   <section class="location-result">
-    <div>
+    <div v-show="!hideCoordinates">
       <div>Lat: {{ entry.lat }}</div>
       <div>Long: {{ entry.lng }}</div>
     </div>
@@ -16,7 +16,8 @@ export default {
     entry: {
       type: Object,
       required: true
-    }
+    },
+    hideCoordinates: Boolean
   },
 
   data: () => ({
@@ -46,11 +47,14 @@ export default {
   > div {
     display: inline-block;
     width: calc(80% - 30px);
-    margin-left: 30px;
+    margin-right: 20px;
 
     &:first-child {
       width: 20%;
-      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-right: 0;
     }
   }
 }
